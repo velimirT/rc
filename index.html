@@ -1,0 +1,80 @@
+<html>
+<head>
+    <title>Joystick</title>
+	<script type = "text/javascript" src = "https://code.jquery.com/jquery-3.2.1.min.js" ></script>
+</head>
+
+<body>
+	<script type = "text/javascript">
+	var wheel = 120;
+	var speed = 0;
+	var enA = 0;
+	var enB = 0;
+	var run = false;
+	var once = true;
+	move = false;
+	var ip = "192.168.1.102";
+	
+	$(document).on('mousedown', function(event){
+		move = true;
+	});
+	
+	$(document).on('mousemove', function(event){
+		if(move){
+			let x = (event.clientX / document.documentElement.clientWidth) * 200;
+			let y = (($(document).height() - event.clientY) / $(document).height()) * 100;
+			wheel = 200 - x;
+			if(wheel < 20){wheel = 20}
+			if(y < 65 && y > 45){
+				speed = 0;
+				enA = 0;
+				enB = 0;
+			}else if( y > 50){
+				speed = (y - 50) * 2;
+				enA = 1;
+				enB = 0;
+
+			}else if(y < 50){
+				speed = (50 - (y * 2.55)) * 2;
+				enA = 0;
+				enB = 1;
+			}
+			$("#stick").css({"bottom":y +"px", "left": (x / 2) +"px"});
+		}//move
+	});
+	
+	$(document).on('mouseup', function(){
+		wheel = 120;
+		enA = 0;
+		enB = 0;
+		speed = 0;
+		move = false;
+		$("#stick").css({"bottom":"50px", "left": "50px"});
+		$.post("http://"+ip+"/wheel", {"WHEEL":wheel, "SPEED":speed, "IN1": enA, "IN2":enB});
+	});
+
+	$(document).on('click', '#changeIp', function(){
+		ip = $('#ip').val();
+		alert(ip);
+	});
+	
+	setInterval(function(ip){
+		if((run || once) && move){
+			run = false;
+			$.post("http://"+ip+"/wheel", {"WHEEL":wheel, "SPEED":speed, "IN1": enA, "IN2":enB}, function(data){
+				$("#speed").html("Speed: "+ speed);
+				run = true;
+			});
+			once = false;
+		}
+	}, 200);
+	
+	</script>
+	<input type = "text" name = "ip" value = "192.168.0" placeholder="192.168.0.1" id = "ip"/>
+	<button id = 'changeIp'>Change IP</button>
+	<div id = "speed" style = "position: absolute; top:2em; right: 2em; height: 2em; min-width: 200px;">Speed</div>
+		<div id = "joystick" style = "background:url('img/joystickBg.png') center no-repeat; width:200px; position:relative; height:200px; margin:calc(50vh - 100px) auto 0px;">
+			<div id = "stick" style = "background:url('img/stick.png') center no-repeat; position:absolute; height:100px; width:100px; bottom: 50px; left:50px; display:inline-block;"></div>
+		</div>
+</body>
+</html>
