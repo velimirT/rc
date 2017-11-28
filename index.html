@@ -64,6 +64,7 @@
 			run = false;
 			$.post("http://"+ip+"/wheel", {"WHEEL":wheel, "SPEED":speed, "IN1": enA, "IN2":enB}, function(data){
 				$("#speed").html("Speed: "+ speed);
+				$("#distance").html("Distance: "+ data);
 				run = true;
 			});
 			once = false;
@@ -74,6 +75,8 @@
 	<input type = "text" name = "ip" value = "192.168.0" placeholder="192.168.0.1" id = "ip"/>
 	<button id = 'changeIp'>Change IP</button>
 	<div id = "speed" style = "position: absolute; top:2em; right: 2em; height: 2em; min-width: 200px;">Speed</div>
+	<div id = "distance" style = "position: absolute; top:4em; right: 2em; height: 2em; min-width: 200px;">Distance</div>
+	
 		<div id = "joystick" style = "background:url('img/joystickBg.png') center no-repeat; width:200px; position:relative; height:200px; margin:calc(50vh - 100px) auto 0px;">
 			<div id = "stick" style = "background:url('img/stick.png') center no-repeat; position:absolute; height:100px; width:100px; bottom: 50px; left:50px; display:inline-block;"></div>
 		</div>
